@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Declare AI — Developer Briefing v1.0</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+
+:root {
+  --c0: #060610;
+  --c1: #0D0D1C;
+  --c2: #141428;
+  --c3: #1C1C38;
+  --border: rgba(255,255,255,0.07);
+  --border-hi: rgba(100,210,170,0.25);
+  --text: #EEEEF5;
+  --dim: #7878A0;
+  --dim2: #4E4E70;
+  --accent: #64D2AA;
+  --accent2: #5B9CF6;
+  --accent3: #E06EAA;
+  --warn: #F0B429;
+  --danger: #F87171;
+  --ai-write: #64D2AA;
+  --ai-code: #5B9CF6;
+  --ai-vis: #E06EAA;
+  --ai-audio: #F0B429;
+  --ai-research: #9B7FEA;
+  --ai-human: #C8C8DC;
+  --mono: 'JetBrains Mono', monospace;
+  --serif: 'Syne', sans-serif;
+  --body: 'Lora', serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--body);
+  background: var(--c0);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── NOISE TEXTURE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.4;
+}
+
+/* ── LAYOUT ── */
+.page-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ── TOP NAV ── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(6,6,16,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+}
+
+.nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  height: 52px;
+}
+
+.nav-logo {
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+
+.nav-logo span { color: var(--dim); font-weight: 400; font-size: 0.7rem; letter-spacing: 0.1em; margin-left: 6px; }
+
+.nav-links {
+  display: flex;
+  gap: 0;
+  list-style: none;
+  overflow-x: auto;
+}
+
+.nav-links a {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  padding: 0 14px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.nav-links a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+.nav-badge {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--accent);
+  border: 1px solid var(--border-hi);
+  border-radius: 3px;
+  padding: 3px 8px;
+  flex-shrink: 0;
+}
+
+/* ── HERO ── */
+.hero {
+  padding: 90px 0 70px;
+  position: relative;
+}
+
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.hero-title {
+  font-family: var(--serif);
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  margin-bottom: 24px;
+}
+
+.hero-title .line1 { color: var(--text); display: block; }
+.hero-title .line2 {
+  display: block;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 50%, var(--accent3) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  max-width: 580px;
+  font-size: 1.05rem;
+  color: var(--dim);
+  line-height: 1.75;
+  margin-bottom: 40px;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.meta-pill {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--dim);
+  text-transform: uppercase;
+}
+
+.meta-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+
+/* ── SECTION HEADERS ── */
+.section {
+  padding: 72px 0;
+  border-top: 1px solid var(--border);
+}
+
+.section-kicker {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+.section-title {
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+
+.section-lead {
+  max-width: 620px;
+  color: var(--dim);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  margin-bottom: 40px;
+}
+
+/* ── ARCHITECTURE DIAGRAM ── */
+.arch-diagram {
+  background: var(--c1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  overflow-x: auto;
+}
+
+.arch-layers {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.arch-layer {
+  display: grid;
+  align-items: center;
+  gap: 12px;
+}
+
+.arch-layer-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--dim2);
+  writing-mode: horizontal-tb;
+  flex-shrink: 0;
+  width: 80px;
+}
+
+.arch-boxes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.arch-box {
+  background: var(--c2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text);
+  position: relative;
+  transition: border-color 0.2s;
+  cursor: default;
+}
+
+.arch-box:hover { border-color: var(--border-hi); }
+
+.arch-box .ab-label {
+  color: var(--dim);
+  font-size: 0.58rem;
+  display: block;
+  margin-bottom: 3px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.arch-box.highlight { border-color: rgba(100,210,170,0.3); background: rgba(100,210,170,0.04); }
+.arch-box.highlight2 { border-color: rgba(91,156,246,0.3); background: rgba(91,156,246,0.04); }
+.arch-box.highlight3 { border-color: rgba(224,110,170,0.3); background: rgba(224,110,170,0.04); }
+
+.arch-arrow {
+  text-align: center;
+  color: var(--dim2);
+  font-size: 1rem;
+  padding: 0;
+  line-height: 1;
+}
+
+/* ── GRID CARDS ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.card-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.card {
+  background: var(--c1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.card:hover {
+  border-color: var(--border-hi);
+  transform: translateY(-2px);
+}
+
+.card-icon {
+  font-size: 1.4rem;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.card-title {
+  font-family: var(--serif);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.card-body {
+  font-size: 0.83rem;
+  color: var(--dim);
+  line-height: 1.65;
+}
+
+.card-tag {
+  display: inline-block;
+  margin-top: 12px;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: rgba(100,210,170,0.08);
+  color: var(--accent);
+  border: 1px solid rgba(100,210,170,0.15);
+}
+
+.card-tag.blue { background: rgba(91,156,246,0.08); color: var(--accent2); border-color: rgba(91,156,246,0.15); }
+.card-tag.pink { background: rgba(224,110,170,0.08); color: var(--accent3); border-color: rgba(224,110,170,0.15); }
+.card-tag.warn { background: rgba(240,180,41,0.08); color: var(--warn); border-color: rgba(240,180,41,0.15); }
+
+/* ── CODE BLOCK ── */
+.code-block {
+  background: #080812;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--c1);
+  border-bottom: 1px solid var(--border);
+}
+
+.code-dots { display: flex; gap: 5px; }
+.code-dot { width: 9px; height: 9px; border-radius: 50%; }
+.code-dot:nth-child(1) { background: #F87171; }
+.code-dot:nth-child(2) { background: var(--warn); }
+.code-dot:nth-child(3) { background: var(--accent); }
+
+.code-filename {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--dim);
+  letter-spacing: 0.05em;
+}
+
+pre {
+  padding: 20px;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: var(--dim);
+}
+
+.token-key { color: var(--accent2); }
+.token-str { color: var(--accent); }
+.token-num { color: var(--warn); }
+.token-comment { color: var(--dim2); font-style: italic; }
+.token-type { color: var(--accent3); }
+
+/* ── TIMELINE / ROADMAP ── */
+.timeline {
+  position: relative;
+  padding-left: 28px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--accent), var(--dim2) 60%, transparent);
+}
+
+.tl-item {
+  position: relative;
+  padding: 0 0 40px 28px;
+}
+
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 8px;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--c0);
+  border: 1.5px solid var(--dim2);
+  transition: border-color 0.2s;
+}
+
+.tl-item.active::before { border-color: var(--accent); background: var(--accent); }
+.tl-item.next::before { border-color: var(--accent2); }
+
+.tl-phase {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.tl-item.next .tl-phase { color: var(--accent2); }
+
+.tl-title {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+
+.tl-body {
+  font-size: 0.85rem;
+  color: var(--dim);
+  line-height: 1.65;
+  max-width: 640px;
+}
+
+.tl-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.tl-tag {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.07em;
+  padding: 2px 8px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  color: var(--dim);
+}
+
+/* ── STACK TABLE ── */
+.stack-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.stack-table th {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.stack-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: var(--dim);
+  vertical-align: top;
+}
+
+.stack-table td:first-child {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.stack-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+.why-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  padding: 2px 7px;
+  border-radius: 2px;
+  background: rgba(100,210,170,0.07);
+  color: var(--accent);
+  border: 1px solid rgba(100,210,170,0.12);
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
+.why-tag.b { background: rgba(91,156,246,0.07); color: var(--accent2); border-color: rgba(91,156,246,0.12); }
+.why-tag.w { background: rgba(240,180,41,0.07); color: var(--warn); border-color: rgba(240,180,41,0.12); }
+
+/* ── PIE LEGEND ── */
+.legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+.legend-swatch {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── WIDGET PREVIEW FLOAT ── */
+#dai-widget {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  user-select: none;
+  font-family: var(--mono);
+}
+
+.dai-icon-wrap {
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  background: var(--c1);
+  border: 1.5px solid rgba(100,210,170,0.28);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.55);
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.3s;
+  position: relative;
+}
+
+.dai-icon-wrap:hover {
+  transform: scale(1.07);
+  border-color: var(--accent);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 8px rgba(100,210,170,0.06);
+}
+
+.dai-icon-label {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.46rem;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.6;
+}
+
+.dai-notif {
+  position: absolute;
+  top: 4px; right: 4px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+  border: 1.5px solid var(--c0);
+  animation: blink 2.4s infinite;
+}
+
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.dai-power {
+  position: absolute;
+  top: -9px; left: -9px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--c1);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.5rem;
+  color: var(--dim);
+  transition: all 0.2s;
+  z-index: 2;
+}
+.dai-power:hover { border-color: var(--accent); color: var(--accent); }
+.dai-power.off { border-color: var(--danger); color: var(--danger); }
+
+/* Panel */
+.dai-panel {
+  position: absolute;
+  bottom: 66px;
+  right: 0;
+  width: 316px;
+  background: var(--c1);
+  border: 1px solid rgba(100,210,170,0.14);
+  border-radius: 12px;
+  box-shadow: 0 28px 64px rgba(0,0,0,0.75);
+  overflow: hidden;
+  transform-origin: bottom right;
+  transform: scale(0.88) translateY(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s;
+}
+
+.dai-panel.open {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+.dai-ph {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 15px 11px;
+  border-bottom: 1px solid var(--border);
+  cursor: grab;
+}
+.dai-ph:active { cursor: grabbing; }
+
+.dai-ph-info { flex: 1; min-width: 0; }
+.dai-ph-title {
+  font-family: var(--serif);
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dai-ph-url {
+  font-size: 0.58rem;
+  color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.dai-close-btn {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  border: none;
+  cursor: pointer;
+  color: var(--dim);
+  font-size: 0.65rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.dai-close-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+/* Periodic element card */
+.dai-elem {
+  display: grid;
+  grid-template-columns: 68px 1fr;
+  margin: 12px 14px;
+  background: var(--c2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.dai-el-l {
+  background: linear-gradient(135deg, rgba(100,210,170,0.07), rgba(91,156,246,0.05));
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 10px 6px;
+}
+
+.dai-el-sym {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+}
+.dai-el-ver {
+  font-size: 0.5rem;
+  color: var(--dim);
+  margin-top: 3px;
+}
+
+.dai-el-r {
+  padding: 10px 11px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 8px;
+}
+
+.dai-stat-l { font-size: 0.5rem; color: var(--dim); text-transform: uppercase; letter-spacing: 0.08em; }
+.dai-stat-v { font-size: 0.8rem; font-weight: 600; color: var(--text); margin-top: 1px; }
+
+/* Bars */
+.dai-bars { padding: 0 14px 10px; }
+.dai-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.dai-bar-lbl { font-size: 0.68rem; color: var(--dim); width: 54px; flex-shrink: 0; }
+.dai-bar-track { flex: 1; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+.dai-bar-fill { height: 100%; border-radius: 2px; transition: width 0.8s cubic-bezier(0.23,1,0.32,1); }
+.dai-bar-pct { font-size: 0.58rem; color: var(--dim); width: 26px; text-align: right; flex-shrink: 0; }
+
+/* Scores */
+.dai-scores {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  padding: 0 14px 12px;
+}
+.dai-score-box {
+  background: var(--c2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 8px 10px;
+}
+.dai-score-l { font-size: 0.5rem; color: var(--dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px; }
+.dai-score-v { font-family: var(--serif); font-size: 1rem; font-weight: 700; }
+.sc-g { color: var(--ai-write); }
+.sc-y { color: var(--warn); }
+.sc-b { color: var(--accent2); }
+
+/* Contributors */
+.dai-contribs {
+  padding: 10px 14px 12px;
+  border-top: 1px solid var(--border);
+}
+.dai-contrib-l { font-size: 0.5rem; color: var(--dim); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 7px; }
+.dai-contrib-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.dai-chip {
+  font-size: 0.68rem;
+  padding: 3px 9px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--dim);
+}
+.dai-chip.h { border-color: rgba(200,200,220,0.2); color: var(--ai-human); }
+.dai-chip.a { border-color: rgba(100,210,170,0.2); color: var(--accent); }
+
+/* Footer */
+.dai-foot {
+  display: flex;
+  border-top: 1px solid var(--border);
+}
+.dai-foot-btn {
+  flex: 1;
+  padding: 9px 4px;
+  background: none;
+  border: none;
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 0.54rem;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+  transition: background 0.15s, color 0.15s;
+}
+.dai-foot-btn:last-child { border-right: none; }
+.dai-foot-btn:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+
+/* ── FORUM MOCKUP ── */
+.forum-mockup {
+  background: var(--c1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.forum-header-bar {
+  background: var(--c2);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.forum-title-bar {
+  font-family: var(--serif);
+  font-size: 0.85rem;
+  font-weight: 700;
+  flex: 1;
+}
+
+.forum-badge {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: rgba(248,113,113,0.1);
+  color: var(--danger);
+  border: 1px solid rgba(248,113,113,0.2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.forum-badge.open-badge { background: rgba(240,180,41,0.1); color: var(--warn); border-color: rgba(240,180,41,0.2); }
+.forum-badge.res-badge { background: rgba(100,210,170,0.08); color: var(--accent); border-color: rgba(100,210,170,0.2); }
+
+.forum-post {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+}
+
+.forum-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.forum-post-body { flex: 1; min-width: 0; }
+
+.forum-post-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.forum-username {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.forum-role {
+  font-family: var(--mono);
+  font-size: 0.54rem;
+  color: var(--dim);
+  padding: 1px 5px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.forum-timestamp {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  color: var(--dim2);
+  margin-left: auto;
+}
+
+.forum-text {
+  font-size: 0.82rem;
+  color: var(--dim);
+  line-height: 1.65;
+}
+
+.forum-text strong { color: var(--text); }
+
+.forum-votes {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.vote-btn {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  color: var(--dim);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+/* ── CALLOUT ── */
+.callout {
+  background: rgba(100,210,170,0.05);
+  border: 1px solid rgba(100,210,170,0.15);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-size: 0.88rem;
+  color: var(--dim);
+  line-height: 1.7;
+}
+
+.callout.warn {
+  background: rgba(240,180,41,0.05);
+  border-color: rgba(240,180,41,0.15);
+  border-left-color: var(--warn);
+}
+
+.callout.info {
+  background: rgba(91,156,246,0.05);
+  border-color: rgba(91,156,246,0.15);
+  border-left-color: var(--accent2);
+}
+
+.callout strong { color: var(--text); }
+
+/* ── TWO-COL ── */
+.two-col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 28px;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 40px 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.footer-left {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--dim2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.footer-right {
+  display: flex;
+  gap: 16px;
+}
+
+.footer-link {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--dim);
+  text-decoration: none;
+  letter-spacing: 0.06em;
+  transition: color 0.2s;
+}
+.footer-link:hover { color: var(--accent); }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 0; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">Declare AI <span>DEV BRIEF v1.0</span></div>
+    <ul class="nav-links">
+      <li><a href="#vision">Vision</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#schema">Schema</a></li>
+      <li><a href="#backend">Backend</a></li>
+      <li><a href="#forum">Forum</a></li>
+      <li><a href="#stack">Tech Stack</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="#oss">Open Source</a></li>
+    </ul>
+    <div class="nav-badge">MIT License · OSS</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="page-wrap">
+<section class="hero">
+  <div class="hero-eyebrow">Developer Briefing Document — For Internal & Contributor Use</div>
+  <h1 class="hero-title">
+    <span class="line1">Declare AI</span>
+    <span class="line2">Open Standard for<br>AI Transparency</span>
+  </h1>
+  <p class="hero-sub">
+    A universal disclosure layer for the web. Any piece of content — article, video, codebase, image, audio — carries a machine-readable and human-readable declaration of how AI contributed to it. Think Creative Commons, but for intelligence provenance.
+  </p>
+  <div class="hero-meta">
+    <div class="meta-pill"><div class="meta-dot" style="background:var(--accent)"></div> Open Source · MIT</div>
+    <div class="meta-pill"><div class="meta-dot" style="background:var(--accent2)"></div> Free Forever</div>
+    <div class="meta-pill"><div class="meta-dot" style="background:var(--accent3)"></div> Community Governed</div>
+    <div class="meta-pill"><div class="meta-dot" style="background:var(--warn)"></div> No Ads · No Tracking</div>
+  </div>
+</section>
+</div>
+<hr>
+
+<!-- VISION -->
+<div class="page-wrap">
+<section class="section" id="vision">
+  <div class="section-kicker">01 — Vision</div>
+  <h2 class="section-title">Why the web needs this now</h2>
+  <p class="section-lead">As AI becomes embedded in the production of virtually all digital content, audiences, researchers, educators, and regulators have no standardized way to understand the provenance of what they read, watch, or hear. Declare AI solves this with a lightweight, embeddable standard.</p>
+
+  <div class="callout">
+    <strong>The analogy:</strong> Nutrition labels didn't exist until regulators and consumers demanded them. AI contribution labels don't exist yet — but the moment is coming. Being the open standard that arrives first, free, and well-designed is the entire opportunity.
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-icon">🏫</span>
+      <div class="card-title">Education</div>
+      <div class="card-body">Teachers and institutions need to know whether student work, textbooks, or research materials were AI-generated. A standard label removes the guesswork and enables policy.</div>
+      <span class="card-tag">High Priority</span>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔬</span>
+      <div class="card-title">Research & Science</div>
+      <div class="card-body">Journals and preprint servers need provenance. AI-assisted literature reviews, data synthesis, and figure generation need declaration to preserve scientific integrity.</div>
+      <span class="card-tag">High Priority</span>
+    </div>
+    <div class="card">
+      <span class="card-icon">📰</span>
+      <div class="card-title">Journalism & Media</div>
+      <div class="card-body">News organizations using AI for summarization, translation, or image creation should disclose it. Readers deserve to know. The dispute forum catches violations.</div>
+      <span class="card-tag blue">Key Sector</span>
+    </div>
+    <div class="card">
+      <span class="card-icon">🎨</span>
+      <div class="card-title">Art & Creative</div>
+      <div class="card-body">Artists using AI tools can declare their process transparently, protect their human creative contributions, and participate in an emerging discourse about authorship.</div>
+      <span class="card-tag pink">Cultural Layer</span>
+    </div>
+    <div class="card">
+      <span class="card-icon">⚖️</span>
+      <div class="card-title">Legal & Regulatory</div>
+      <div class="card-body">As AI disclosure laws emerge globally (EU AI Act, etc.), Declare AI can serve as the compliance layer that platforms adopt rather than building their own.</div>
+      <span class="card-tag warn">Strategic</span>
+    </div>
+    <div class="card">
+      <span class="card-icon">💊</span>
+      <div class="card-title">Medicine & Health</div>
+      <div class="card-body">AI-authored health content carries liability risk. Declaration + debunk scoring enables patients and professionals to evaluate the trustworthiness of what they read.</div>
+      <span class="card-tag">Critical</span>
+    </div>
+  </div>
+</section>
+</div>
+<hr>
+
+<!-- ARCHITECTURE -->
+<div class="page-wrap">
+<section class="section" id="architecture">
+  <div class="section-kicker">02 — System Architecture</div>
+  <h2 class="section-title">How the pieces connect</h2>
+  <p class="section-lead">The system has four distinct layers: the open schema standard, the embeddable widget, the backend API & dashboard, and the community forum. Each is independently useful; together they form the full platform.</p>
+
+  <div class="arch-diagram">
+    <div class="arch-layers">
+      <div style="display:grid;grid-template-columns:90px 1fr;gap:16px;align-items:center">
+        <div style="font-family:var(--mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--dim2)">Consumers</div>
+        <div class="arch-boxes">
+          <div class="arch-box"><span class="ab-label">Browser</span>Extension (Chrome/FF/Safari)</div>
+          <div class="arch-box"><span class="ab-label">Embedded</span>JS Widget (1 script tag)</div>
+          <div class="arch-box"><span class="ab-label">Direct</span>declare-ai.com Dashboard</div>
+          <div class="arch-box"><span class="ab-label">3rd Party</span>CMS Plugins (WP, Ghost...)</div>
+        </div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div style="display:grid;grid-template-columns:90px 1fr;gap:16px;align-items:center">
+        <div style="font-family:var(--mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent)">API Layer</div>
+        <div class="arch-boxes">
+          <div class="arch-box highlight"><span class="ab-label">Public</span>REST API v1</div>
+          <div class="arch-box highlight"><span class="ab-label">Auth</span>JWT / OAuth2</div>
+          <div class="arch-box highlight"><span class="ab-label">Rate Limit</span>Anonymous · Registered</div>
+          <div class="arch-box highlight"><span class="ab-label">CDN</span>JSON Delivery (Cloudflare)</div>
+        </div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div style="display:grid;grid-template-columns:90px 1fr;gap:16px;align-items:center">
+        <div style="font-family:var(--mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent2)">Services</div>
+        <div class="arch-boxes">
+          <div class="arch-box highlight2"><span class="ab-label">Core</span>Declaration Service</div>
+          <div class="arch-box highlight2"><span class="ab-label">Scoring</span>Debunk + Deepfake Engine</div>
+          <div class="arch-box highlight2"><span class="ab-label">Search</span>Content Index</div>
+          <div class="arch-box highlight2"><span class="ab-label">Notif</span>Dispute Alerts</div>
+          <div class="arch-box highlight2"><span class="ab-label">Worker</span>AI Tool Auto-Detection</div>
+        </div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div style="display:grid;grid-template-columns:90px 1fr;gap:16px;align-items:center">
+        <div style="font-family:var(--mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--dim2)">Data</div>
+        <div class="arch-boxes">
+          <div class="arch-box"><span class="ab-label">Primary DB</span>PostgreSQL</div>
+          <div class="arch-box"><span class="ab-label">Cache</span>Redis</div>
+          <div class="arch-box"><span class="ab-label">Search</span>Meilisearch</div>
+          <div class="arch-box"><span class="ab-label">Files</span>S3-compatible Store</div>
+          <div class="arch-box"><span class="ab-label">Forum</span>Discourse (separate)</div>
+        </div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div style="display:grid;grid-template-columns:90px 1fr;gap:16px;align-items:center">
+        <div style="font-family:var(--mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent3)">Infra</div>
+        <div class="arch-boxes">
+          <div class="arch-box highlight3"><span class="ab-label">Host</span>Fly.io / Railway (MVP)</div>
+          <div class="arch-box highlight3"><span class="ab-label">DNS+CDN</span>Cloudflare</div>
+          <div class="arch-box highlight3"><span class="ab-label">CI/CD</span>GitHub Actions</div>
+          <div class="arch-box highlight3"><span class="ab-label">Monitor</span>Grafana + Sentry</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+<hr>
+
+<!-- SCHEMA -->
+<div class="page-wrap">
+<section class="section" id="schema">
+  <div class="section-kicker">03 — The Open Standard</div>
+  <h2 class="section-title">declare-ai.json schema v1.0</h2>
+  <p class="section-lead">The schema is the heart of the standard. Any creator, platform, or AI tool can generate this file. It is self-hostable — no dependency on our API required. The API adds verification, search, and dispute resolution on top.</p>
+
+  <div class="legend-row">
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--ai-write)"></div> Writing / Language</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--ai-code)"></div> Code</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--ai-vis)"></div> Visual / Image</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--ai-audio)"></div> Audio / Music</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--ai-research)"></div> Research / Data</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--ai-human)"></div> Human</div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div class="code-dots">
+        <div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div>
+      </div>
+      <div class="code-filename">declare-ai.json — Full Schema Reference</div>
+    </div>
+    <pre>{
+  <span class="token-key">"$schema"</span>: <span class="token-str">"https://declare-ai.org/schema/v1.json"</span>,
+  <span class="token-key">"version"</span>: <span class="token-str">"1.0.0"</span>,
+
+  <span class="token-comment">// ── Content Identification ──────────────────────</span>
+  <span class="token-key">"content_title"</span>: <span class="token-str">"AI in Medicine 2025"</span>,
+  <span class="token-key">"content_url"</span>: <span class="token-str">"https://example.com/ai-medicine-2025"</span>,
+  <span class="token-key">"content_type"</span>: <span class="token-str">"article"</span>,  <span class="token-comment">// article | video | audio | image | code | dataset</span>
+  <span class="token-key">"content_hash"</span>: <span class="token-str">"sha256:8f4a2b..."</span>,  <span class="token-comment">// optional integrity check</span>
+
+  <span class="token-comment">// ── Declaration Metadata ────────────────────────</span>
+  <span class="token-key">"declared_by"</span>: <span class="token-str">"Dr. J. Rivera"</span>,
+  <span class="token-key">"declared_by_handle"</span>: <span class="token-str">"@jrivera"</span>,
+  <span class="token-key">"declared_at"</span>: <span class="token-str">"2025-09-14T10:30:00Z"</span>,
+  <span class="token-key">"declaration_method"</span>: <span class="token-str">"self-declared"</span>,  <span class="token-comment">// self-declared | platform-verified | community-verified</span>
+
+  <span class="token-comment">// ── AI Contributions ────────────────────────────</span>
+  <span class="token-key">"contributions"</span>: [
+    {
+      <span class="token-key">"type"</span>: <span class="token-str">"writing"</span>,
+      <span class="token-key">"pct"</span>: <span class="token-num">55</span>,
+      <span class="token-key">"tool"</span>: <span class="token-str">"Claude 3.7 Sonnet"</span>,
+      <span class="token-key">"tool_version"</span>: <span class="token-str">"claude-sonnet-3-7"</span>,
+      <span class="token-key">"provider"</span>: <span class="token-str">"Anthropic"</span>,
+      <span class="token-key">"role"</span>: <span class="token-str">"First draft, outline, editing"</span>,
+      <span class="token-key">"human_hours"</span>: <span class="token-num">1.5</span>
+    },
+    {
+      <span class="token-key">"type"</span>: <span class="token-str">"research"</span>,
+      <span class="token-key">"pct"</span>: <span class="token-num">18</span>,
+      <span class="token-key">"tool"</span>: <span class="token-str">"Perplexity Pro"</span>,
+      <span class="token-key">"role"</span>: <span class="token-str">"Literature review, citation gathering"</span>,
+      <span class="token-key">"human_hours"</span>: <span class="token-num">2.0</span>
+    },
+    {
+      <span class="token-key">"type"</span>: <span class="token-str">"visual"</span>,
+      <span class="token-key">"pct"</span>: <span class="token-num">12</span>,
+      <span class="token-key">"tool"</span>: <span class="token-str">"Midjourney v7"</span>,
+      <span class="token-key">"role"</span>: <span class="token-str">"Header image, diagrams"</span>,
+      <span class="token-key">"human_hours"</span>: <span class="token-num">0.5</span>
+    },
+    {
+      <span class="token-key">"type"</span>: <span class="token-str">"human"</span>,
+      <span class="token-key">"pct"</span>: <span class="token-num">15</span>,
+      <span class="token-key">"role"</span>: <span class="token-str">"Expert review, fact-checking, final edit"</span>,
+      <span class="token-key">"human_hours"</span>: <span class="token-num">3.0</span>
+    }
+  ],
+
+  <span class="token-comment">// ── Human Contributors ──────────────────────────</span>
+  <span class="token-key">"contributors"</span>: [
+    { <span class="token-key">"name"</span>: <span class="token-str">"Dr. J. Rivera"</span>, <span class="token-key">"role"</span>: <span class="token-str">"Author"</span>, <span class="token-key">"orcid"</span>: <span class="token-str">"0000-0002-1825-0097"</span> },
+    { <span class="token-key">"name"</span>: <span class="token-str">"M. Okonkwo"</span>, <span class="token-key">"role"</span>: <span class="token-str">"Editor"</span> }
+  ],
+
+  <span class="token-comment">// ── Verification & Trust ────────────────────────</span>
+  <span class="token-key">"debunk_score"</span>: <span class="token-num">87</span>,           <span class="token-comment">// 0–100, null if unscored</span>
+  <span class="token-key">"deepfake_probability"</span>: <span class="token-num">0.02</span>,   <span class="token-comment">// 0.0–1.0, null if not applicable</span>
+  <span class="token-key">"verified_by"</span>: <span class="token-str">"declare-ai.org"</span>,
+  <span class="token-key">"verification_sig"</span>: <span class="token-str">"eyJhbGci..."</span>,  <span class="token-comment">// JWT signature from API</span>
+
+  <span class="token-comment">// ── Disputes ────────────────────────────────────</span>
+  <span class="token-key">"dispute_count"</span>: <span class="token-num">1</span>,
+  <span class="token-key">"dispute_url"</span>: <span class="token-str">"https://forum.declare-ai.org/t/ai-medicine-2025/4421"</span>,
+  <span class="token-key">"dispute_status"</span>: <span class="token-str">"open"</span>,      <span class="token-comment">// open | resolved | dismissed</span>
+
+  <span class="token-comment">// ── Legal ───────────────────────────────────────</span>
+  <span class="token-key">"license"</span>: <span class="token-str">"CC-BY-4.0"</span>,
+  <span class="token-key">"jurisdiction"</span>: <span class="token-str">"US"</span>
+}</pre>
+  </div>
+
+  <div class="callout info">
+    <strong>Self-hostable by design:</strong> A creator can drop <code>declare-ai.json</code> alongside any file, link to it from a <code>&lt;meta&gt;</code> tag, and the browser extension will auto-detect it — no API account needed. The API and dashboard add verification, search, and dispute resolution as an optional upgrade layer.
+  </div>
+</section>
+</div>
+<hr>
+
+<!-- BACKEND -->
+<div class="page-wrap">
+<section class="section" id="backend">
+  <div class="section-kicker">04 — Backend Services</div>
+  <h2 class="section-title">Self-declaration portal & API</h2>
+  <p class="section-lead">The backend has three jobs: accept and store declarations, expose them via API for the widget and extension, and run verification / scoring services. It must be horizontally scalable and 100% open source so the community can self-host.</p>
+
+  <div class="two-col">
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <span class="card-icon">✍️</span>
+        <div class="card-title">Self-Declaration Portal</div>
+        <div class="card-body">A clean web form at <strong>declare-ai.org/declare</strong>. Creator enters their content URL, fills out contribution sliders per type and tool, adds contributor names, and generates a signed JSON file they can download or host via our CDN. No account required for basic use; account required for API key, dispute tracking, and verification badge.</div>
+        <span class="card-tag">Core Feature</span>
+      </div>
+      <div class="card">
+        <span class="card-icon">🔑</span>
+        <div class="card-title">REST API</div>
+        <div class="card-body">Public endpoints: <code style="color:var(--accent);font-size:0.8rem">GET /v1/declarations/{url}</code> returns declaration for a URL. <code style="color:var(--accent);font-size:0.8rem">POST /v1/declarations</code> submits a new one. <code style="color:var(--accent);font-size:0.8rem">GET /v1/search</code> searches by tool, contributor, content type. Anonymous rate-limited; authenticated for higher limits. Fully documented via OpenAPI spec.</div>
+        <span class="card-tag blue">Developer-Facing</span>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <span class="card-icon">🧠</span>
+        <div class="card-title">Scoring Engine</div>
+        <div class="card-body">Two scoring services run asynchronously after declaration submission. <strong>Debunk Score</strong> uses a combination of fact-checking APIs (ClaimBuster, Google Fact Check Tools) and community votes. <strong>Deepfake Probability</strong> uses open-source models (Hive, FakeCatcher derivatives) on linked video/audio. Both are optional fields populated after async processing; creators are notified by email.</div>
+        <span class="card-tag warn">Phase 2</span>
+      </div>
+      <div class="card">
+        <span class="card-icon">⚠️</span>
+        <div class="card-title">Dispute System</div>
+        <div class="card-body">Anyone can flag a declaration as inaccurate. A flag creates a Discourse forum thread (via Discourse API), increments <code style="color:var(--accent);font-size:0.8rem">dispute_count</code>, and notifies the original declarer. Community moderators + the original creator can resolve or dismiss. Resolved disputes update the badge color in the widget from yellow to green or red.</div>
+        <span class="card-tag pink">Community Critical</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warn" style="margin-top:28px">
+    <strong>MVP scope:</strong> For launch, ship the declaration form + CDN hosting + REST API + browser extension. Scoring engines and deepfake detection are Phase 2. Don't let perfect block shipped.
+  </div>
+</section>
+</div>
+<hr>
+
+<!-- FORUM MOCKUP -->
+<div class="page-wrap">
+<section class="section" id="forum">
+  <div class="section-kicker">05 — Community Forum</div>
+  <h2 class="section-title">Dispute & discussion layer</h2>
+  <p class="section-lead">The forum is built on self-hosted <strong>Discourse</strong> (open source, free to run). The Declare AI API creates threads automatically when disputes are filed. Here's what a dispute thread looks like:</p>
+
+  <div class="forum-mockup">
+    <div class="forum-header-bar">
+      <div class="forum-title-bar">⚠️ Dispute: "AI in Medicine 2025" — Writing % may be understated</div>
+      <div class="forum-badge open-badge">Open</div>
+      <div style="font-family:var(--mono);font-size:0.58rem;color:var(--dim);margin-left:auto">Thread #4421 · declare-ai.org</div>
+    </div>
+
+    <div class="forum-post">
+      <div class="forum-avatar" style="background:rgba(91,156,246,0.15);color:var(--accent2)">RK</div>
+      <div class="forum-post-body">
+        <div class="forum-post-meta">
+          <span class="forum-username">ResearcherKim</span>
+          <span class="forum-role">Verified Researcher</span>
+          <span class="forum-timestamp">2025-09-15 · 09:14</span>
+        </div>
+        <div class="forum-text">The declaration lists <strong>55% writing by Claude</strong>, but based on stylometric analysis using the linked tool, the estimated AI-written percentage is closer to <strong>78–82%</strong>. I ran the article through three detectors independently. The human editing appears minimal. Happy to share my methodology. Requesting the declarer provide more detail on what sections were human-written.</div>
+        <div class="forum-votes">
+          <button class="vote-btn">▲ 12</button>
+          <button class="vote-btn">Reply</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="forum-post" style="background:rgba(255,255,255,0.01)">
+      <div class="forum-avatar" style="background:rgba(100,210,170,0.12);color:var(--accent)">JR</div>
+      <div class="forum-post-body">
+        <div class="forum-post-meta">
+          <span class="forum-username">Dr. J. Rivera</span>
+          <span class="forum-role">Declarer</span>
+          <span class="forum-timestamp">2025-09-15 · 11:42</span>
+        </div>
+        <div class="forum-text">Fair challenge. I'll clarify: the 55% reflects the <em>initial draft</em> output from Claude. Sections 3, 5, and the entire Discussion were rewritten by me from scratch — these are not well captured by detectors because they draw on clinical experience. I'm happy to update the declaration to add a methodology note. Would 65% AI / 35% human with an annotation feel more accurate to the community?</div>
+        <div class="forum-votes">
+          <button class="vote-btn">▲ 8</button>
+          <button class="vote-btn">Reply</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="forum-post">
+      <div class="forum-avatar" style="background:rgba(155,127,234,0.15);color:var(--ai-research)">CM</div>
+      <div class="forum-post-body">
+        <div class="forum-post-meta">
+          <span class="forum-username">community_mod</span>
+          <span class="forum-role">Moderator</span>
+          <span class="forum-timestamp">2025-09-16 · 08:00</span>
+        </div>
+        <div class="forum-text">Marking this as <strong>Under Review</strong>. The declarer has engaged in good faith. If an updated declaration is filed within 72 hours, this thread will be marked Resolved. Standard procedure: community vote on updated declaration accuracy before badge is reset to green.</div>
+        <div class="forum-votes">
+          <button class="vote-btn">▲ 5</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:12px 18px;background:var(--c2);border-top:1px solid var(--border)">
+      <div style="font-family:var(--mono);font-size:0.6rem;color:var(--dim2);letter-spacing:0.08em">DISPUTE FILED VIA DECLARE AI API · THREAD AUTO-CREATED · 3 PARTICIPANTS · LAST ACTIVITY 8h AGO</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card" style="margin-top:20px">
+      <span class="card-icon">🏛️</span>
+      <div class="card-title">Forum Architecture</div>
+      <div class="card-body">Self-hosted Discourse on a $6/mo VPS. Discourse SSO linked to declare-ai.org accounts so users don't need a separate login. Declare AI API creates threads programmatically via Discourse API when a dispute is filed. Categories: Disputes, Tool Updates, Governance, Feature Requests.</div>
+      <span class="card-tag">Discourse · Self-hosted</span>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <span class="card-icon">🗳️</span>
+      <div class="card-title">Community Governance</div>
+      <div class="card-body">Schema changes go through a 30-day RFC process in the forum. Any contributor can propose additions. Merges require 2 maintainer approvals. This mirrors the model used by W3C and CommonMark — slow by design, to preserve stability of the standard.</div>
+      <span class="card-tag blue">RFC Process</span>
+    </div>
+  </div>
+</section>
+</div>
+<hr>
+
+<!-- TECH STACK -->
+<div class="page-wrap">
+<section class="section" id="stack">
+  <div class="section-kicker">06 — Technology</div>
+  <h2 class="section-title">Recommended stack</h2>
+  <p class="section-lead">Chosen for: open source availability, developer familiarity, low ops overhead at launch, and ability to scale. Everything runs on commodity infrastructure a volunteer community can maintain.</p>
+
+  <table class="stack-table">
+    <thead>
+      <tr><th>Layer</th><th>Technology</th><th>Why</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Frontend</td>
+        <td>Next.js 14 + Tailwind CSS</td>
+        <td>SSR for SEO on declaration pages, React for dashboard UI, huge contributor base <span class="why-tag">OSS</span></td>
+      </tr>
+      <tr>
+        <td>Widget</td>
+        <td>Vanilla JS (zero deps, ~8kb)</td>
+        <td>No framework overhead; embeddable on any site with a single script tag <span class="why-tag">Performance</span></td>
+      </tr>
+      <tr>
+        <td>Extension</td>
+        <td>WebExtensions API (MV3)</td>
+        <td>Single codebase targets Chrome, Firefox, Edge, Safari with minor tweaks <span class="why-tag b">Cross-browser</span></td>
+      </tr>
+      <tr>
+        <td>API</td>
+        <td>Node.js + Fastify</td>
+        <td>Fast, low memory, excellent TypeScript support, familiar to most web devs <span class="why-tag">Performance</span></td>
+      </tr>
+      <tr>
+        <td>Database</td>
+        <td>PostgreSQL 16</td>
+        <td>JSONB for flexible schema storage, mature, excellent free hosting on Supabase/Neon <span class="why-tag">Reliability</span></td>
+      </tr>
+      <tr>
+        <td>Cache</td>
+        <td>Redis (Upstash)</td>
+        <td>API response caching, rate limiting, session store. Serverless option avoids ops <span class="why-tag b">Low-ops</span></td>
+      </tr>
+      <tr>
+        <td>CDN + JSON Hosting</td>
+        <td>Cloudflare R2 + Workers</td>
+        <td>Free egress, global edge delivery of declare-ai.json files, KV for hot cache <span class="why-tag w">Free tier</span></td>
+      </tr>
+      <tr>
+        <td>Auth</td>
+        <td>Auth.js (NextAuth)</td>
+        <td>GitHub, Google, email magic link. No vendor lock-in, runs in the Next.js app <span class="why-tag">OSS</span></td>
+      </tr>
+      <tr>
+        <td>Search</td>
+        <td>Meilisearch</td>
+        <td>Fast full-text search of declarations by URL, tool, contributor. Self-hostable <span class="why-tag">OSS</span></td>
+      </tr>
+      <tr>
+        <td>Forum</td>
+        <td>Discourse</td>
+        <td>Industry standard for open-source communities. Ruby-based, rich API for automation <span class="why-tag">OSS</span></td>
+      </tr>
+      <tr>
+        <td>CI/CD</td>
+        <td>GitHub Actions</td>
+        <td>Free for public repos, deeply integrated with GitHub where the code lives <span class="why-tag w">Free</span></td>
+      </tr>
+      <tr>
+        <td>Hosting (MVP)</td>
+        <td>Fly.io or Railway</td>
+        <td>Simple deployment from Dockerfile, free tiers adequate for launch, easy to migrate <span class="why-tag b">Simplicity</span></td>
+      </tr>
+      <tr>
+        <td>Monitoring</td>
+        <td>Sentry + Grafana Cloud</td>
+        <td>Error tracking and metrics. Both have generous free tiers for open source projects <span class="why-tag w">Free OSS tier</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+</div>
+<hr>
+
+<!-- ROADMAP -->
+<div class="page-wrap">
+<section class="section" id="roadmap">
+  <div class="section-kicker">07 — Build Roadmap</div>
+  <h2 class="section-title">Phase-by-phase to global standard</h2>
+  <p class="section-lead">Each phase is independently shippable. The goal is to get something real in front of creators and developers as fast as possible, then grow through community contribution.</p>
+
+  <div class="timeline">
+    <div class="tl-item active">
+      <div class="tl-phase">Phase 0 — Now · Complete</div>
+      <div class="tl-title">Concept, Schema Draft & Interactive Demo</div>
+      <div class="tl-body">Vision document (this page), full JSON schema v1.0 draft, interactive widget prototype in HTML/JS, architecture design. Ready to share with developers and post as public RFC on GitHub Discussions.</div>
+      <div class="tl-tags">
+        <span class="tl-tag">Schema v1.0 Draft</span>
+        <span class="tl-tag">Widget Prototype</span>
+        <span class="tl-tag">Arch Diagram</span>
+        <span class="tl-tag">Dev Briefing Doc</span>
+      </div>
+    </div>
+
+    <div class="tl-item next">
+      <div class="tl-phase">Phase 1 — Weeks 1–6 · Next Target</div>
+      <div class="tl-title">GitHub Repo, Schema Validator & Simple Declaration Form</div>
+      <div class="tl-body">Create the GitHub org and repo. Publish JSON Schema with a validator at declare-ai.org/validate. Build a simple static declaration form (no account needed) that generates a downloadable declare-ai.json. Publish NPM package for the widget. Launch on GitHub and post RFC to Hacker News.</div>
+      <div class="tl-tags">
+        <span class="tl-tag">GitHub Org</span>
+        <span class="tl-tag">Schema Validator</span>
+        <span class="tl-tag">Declaration Form (static)</span>
+        <span class="tl-tag">NPM Package</span>
+        <span class="tl-tag">GitHub Pages site</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-phase">Phase 2 — Weeks 6–14</div>
+      <div class="tl-title">REST API, CDN Hosting & Browser Extension (MVP)</div>
+      <div class="tl-body">Backend API goes live. Declarations can be submitted and stored. declare-ai.json files hosted on Cloudflare CDN. Browser extension auto-detects declarations on any page and surfaces the widget. Submit to Chrome Web Store. Launch Discourse forum. Begin recruiting volunteer moderators.</div>
+      <div class="tl-tags">
+        <span class="tl-tag">REST API v1</span>
+        <span class="tl-tag">PostgreSQL + Redis</span>
+        <span class="tl-tag">CDN Hosting</span>
+        <span class="tl-tag">Chrome Extension</span>
+        <span class="tl-tag">Discourse Forum</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-phase">Phase 3 — Months 4–6</div>
+      <div class="tl-title">Dispute System, Accounts & Community Moderation</div>
+      <div class="tl-body">User accounts with GitHub/Google SSO. Dispute filing from the widget links directly to auto-created forum threads. Moderator tools and escalation paths. Community vote system for declaration accuracy. First cohort of verified organizations (universities, news orgs, open-source projects) onboarded.</div>
+      <div class="tl-tags">
+        <span class="tl-tag">User Accounts</span>
+        <span class="tl-tag">Dispute Flow</span>
+        <span class="tl-tag">Mod Tools</span>
+        <span class="tl-tag">Verification Badges</span>
+        <span class="tl-tag">Partner Orgs</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-phase">Phase 4 — Months 6–10</div>
+      <div class="tl-title">Scoring Engine & Deepfake Detection</div>
+      <div class="tl-body">Debunk Score integrated from fact-check APIs. AI-text detection signals (aggregated, not single-model — too unreliable solo). Deepfake probability pipeline for linked video/audio. Firefox and Safari extensions. WordPress + Ghost + Substack plugins. Email notification system for disputes.</div>
+      <div class="tl-tags">
+        <span class="tl-tag">Debunk Score</span>
+        <span class="tl-tag">Deepfake API</span>
+        <span class="tl-tag">Firefox Ext</span>
+        <span class="tl-tag">WordPress Plugin</span>
+        <span class="tl-tag">Email Notifs</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-phase">Phase 5 — Year 2+</div>
+      <div class="tl-title">W3C Proposal, Platform Integrations & Governance DAO</div>
+      <div class="tl-body">Submit declare-ai.json as a proposed W3C Note. Approach AI companies (Anthropic, Google, OpenAI, Mistral) to auto-embed declarations in exported content. Establish a formal open governance structure. Consider a protocol-level integration with the Internet Archive for permanent declaration storage.</div>
+      <div class="tl-tags">
+        <span class="tl-tag">W3C Note</span>
+        <span class="tl-tag">Platform Partners</span>
+        <span class="tl-tag">Governance Charter</span>
+        <span class="tl-tag">Archive Integration</span>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+<hr>
+
+<!-- OSS + CONTRIBUTING -->
+<div class="page-wrap">
+<section class="section" id="oss">
+  <div class="section-kicker">08 — Open Source Strategy</div>
+  <h2 class="section-title">Free forever, community sustained</h2>
+  <p class="section-lead">The standard must be free to be universal. The infrastructure is funded through optional hosted services — nobody is ever forced to pay.</p>
+
+  <div class="card-grid-3">
+    <div class="card">
+      <span class="card-icon">⚖️</span>
+      <div class="card-title">MIT License</div>
+      <div class="card-body">Widget, schema, validator, API, browser extension — all MIT. Anyone can fork, embed, redistribute without restriction. No copyleft complications for commercial sites that embed it.</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">🏗️</span>
+      <div class="card-title">Self-Hostable</div>
+      <div class="card-body">Full Docker Compose setup so organizations can run their own private Declare AI instance internally (hospitals, universities, governments) without sending data to our servers.</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">💰</span>
+      <div class="card-title">Optional Revenue</div>
+      <div class="card-body">Hosted dashboard for non-technical creators (~$5/mo) covers server costs. Verification API keys for high-volume platforms. Grants from Mozilla, Wikimedia, Open Society. No VC, no ads.</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">🤝</span>
+      <div class="card-title">Contributor Model</div>
+      <div class="card-body">GitHub Issues + Discussions for feature RFCs. All maintainers listed in MAINTAINERS.md. Good First Issue labels. Monthly community calls. Code of Conduct modeled on Contributor Covenant.</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">🌐</span>
+      <div class="card-title">Localization</div>
+      <div class="card-body">declare-ai.json schema and widget UI must be localized for non-English adoption. Crowdin for translation management. This is critical for global standard adoption.</div>
+    </div>
+    <div class="card">
+      <span class="card-icon">📣</span>
+      <div class="card-title">Launch Strategy</div>
+      <div class="card-body">Phase 1 launch targets: Hacker News Show HN, Product Hunt, DEV.to post, outreach to 3–5 small publishers willing to pilot. Measure: declarations filed in month 1.</div>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:28px">
+    <strong>Repository to create:</strong> <code style="color:var(--accent)">github.com/declare-ai/declare-ai</code> — monorepo containing: <code>/schema</code>, <code>/widget</code>, <code>/extension</code>, <code>/api</code>, <code>/site</code>, <code>/docs</code>. Start with GitHub Discussions enabled and a pinned RFC thread for schema v1.0 feedback.
+  </div>
+</section>
+</div>
+
+<hr>
+<footer>
+  <div class="footer-left">Declare AI · Developer Briefing v1.0 · MIT License · Open Standard</div>
+  <div class="footer-right">
+    <a class="footer-link" href="https://github.com" target="_blank">GitHub ↗</a>
+    <a class="footer-link" href="https://npmjs.com" target="_blank">NPM ↗</a>
+    <a class="footer-link" href="https://www.discourse.org" target="_blank">Discourse ↗</a>
+    <a class="footer-link" href="#">Schema ↗</a>
+  </div>
+</footer>
+
+
+<!-- ═══════════ WIDGET (same as before, always present) ═══════════ -->
+<div id="dai-widget">
+  <button class="dai-power" id="dpwr">⏻</button>
+  <div class="dai-icon-wrap" id="dicon">
+    <canvas id="dpie" width="36" height="36"></canvas>
+    <div class="dai-icon-label">Declare AI</div>
+    <div class="dai-notif"></div>
+  </div>
+
+  <div class="dai-panel" id="dpanel">
+    <div class="dai-ph" id="dphdrag">
+      <canvas id="dpie2" width="26" height="26"></canvas>
+      <div class="dai-ph-info">
+        <div class="dai-ph-title">This Briefing Document</div>
+        <div class="dai-ph-url">declare-ai.org/dev-brief-v1</div>
+      </div>
+      <button class="dai-close-btn" id="dclose">✕</button>
+    </div>
+
+    <div class="dai-elem">
+      <div class="dai-el-l">
+        <div class="dai-el-sym">AI</div>
+        <div class="dai-el-ver">v1.0</div>
+      </div>
+      <div class="dai-el-r">
+        <div><div class="dai-stat-l">AI Total</div><div class="dai-stat-v">68%</div></div>
+        <div><div class="dai-stat-l">Human</div><div class="dai-stat-v">32%</div></div>
+        <div><div class="dai-stat-l">Est. Hours</div><div class="dai-stat-v">6.0 h</div></div>
+        <div><div class="dai-stat-l">Tools</div><div class="dai-stat-v">2</div></div>
+      </div>
+    </div>
+
+    <div class="dai-bars">
+      <div class="dai-bar-row"><span class="dai-bar-lbl">Writing</span><div class="dai-bar-track"><div class="dai-bar-fill" style="width:0%;background:var(--ai-write)" data-w="60"></div></div><span class="dai-bar-pct">60%</span></div>
+      <div class="dai-bar-row"><span class="dai-bar-lbl">Research</span><div class="dai-bar-track"><div class="dai-bar-fill" style="width:0%;background:var(--ai-research)" data-w="22"></div></div><span class="dai-bar-pct">22%</span></div>
+      <div class="dai-bar-row"><span class="dai-bar-lbl">Design</span><div class="dai-bar-track"><div class="dai-bar-fill" style="width:0%;background:var(--ai-vis)" data-w="10"></div></div><span class="dai-bar-pct">10%</span></div>
+      <div class="dai-bar-row"><span class="dai-bar-lbl">Human</span><div class="dai-bar-track"><div class="dai-bar-fill" style="width:0%;background:var(--ai-human)" data-w="32"></div></div><span class="dai-bar-pct">32%</span></div>
+    </div>
+
+    <div class="dai-scores">
+      <div class="dai-score-box"><div class="dai-score-l">Debunk Score</div><div class="dai-score-v sc-g">N/A</div></div>
+      <div class="dai-score-box"><div class="dai-score-l">Deepfake</div><div class="dai-score-v sc-g">N/A</div></div>
+      <div class="dai-score-box"><div class="dai-score-l">Transparency</div><div class="dai-score-v sc-b">Self-decl.</div></div>
+      <div class="dai-score-box"><div class="dai-score-l">Disputes</div><div class="dai-score-v sc-g">0</div></div>
+    </div>
+
+    <div class="dai-contribs">
+      <div class="dai-contrib-l">Contributors</div>
+      <div class="dai-contrib-chips">
+        <span class="dai-chip h">Vision Author</span>
+        <span class="dai-chip a">Claude Sonnet</span>
+      </div>
+    </div>
+
+    <div class="dai-foot">
+      <button class="dai-foot-btn">📋 JSON</button>
+      <button class="dai-foot-btn">⚠️ Dispute</button>
+      <button class="dai-foot-btn">🔗 Share</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Pie charts
+function drawPie(id, slices, size) {
+  const c = document.getElementById(id);
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const cx = size/2, cy = size/2, r = size/2 - 1.5;
+  ctx.clearRect(0, 0, size, size);
+  let s = -Math.PI/2;
+  slices.forEach(sl => {
+    const sw = (sl.p/100)*Math.PI*2;
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,s,s+sw); ctx.closePath();
+    ctx.fillStyle = sl.c; ctx.fill();
+    s += sw;
+  });
+  ctx.beginPath(); ctx.arc(cx,cy,r*0.36,0,Math.PI*2);
+  ctx.fillStyle = '#060610'; ctx.fill();
+}
+const sl = [{p:60,c:'#64D2AA'},{p:22,c:'#9B7FEA'},{p:10,c:'#E06EAA'},{p:8,c:'#C8C8DC'}];
+drawPie('dpie', sl, 36);
+drawPie('dpie2', sl, 26);
+
+// Widget toggle
+const panel = document.getElementById('dpanel');
+const icon  = document.getElementById('dicon');
+const close = document.getElementById('dclose');
+const pwr   = document.getElementById('dpwr');
+let open = false, off = false, animated = false, dragging = false;
+
+function openPanel() {
+  if (off) return;
+  open = true; panel.classList.add('open');
+  if (!animated) { animated = true; setTimeout(()=>{ document.querySelectorAll('.dai-bar-fill').forEach(e=>e.style.width=e.dataset.w+'%'); },120); }
+}
+function closePanel() { open = false; panel.classList.remove('open'); }
+
+icon.addEventListener('click', e => { if (!dragging) open ? closePanel() : openPanel(); });
+close.addEventListener('click', closePanel);
+pwr.addEventListener('click', () => {
+  off = !off;
+  pwr.classList.toggle('off', off);
+  icon.style.opacity = off ? '0.3' : '1';
+  if (off) closePanel();
+});
+
+// Drag
+const widget = document.getElementById('dai-widget');
+let dx0,dy0,rr0,rb0;
+function startD(e) {
+  if (e.target===close||e.target===pwr) return;
+  dragging = false;
+  const t = e.touches?e.touches[0]:e;
+  dx0=t.clientX; dy0=t.clientY;
+  const r=widget.getBoundingClientRect();
+  rr0=window.innerWidth-r.right; rb0=window.innerHeight-r.bottom;
+  document.addEventListener('mousemove',onD);
+  document.addEventListener('touchmove',onD,{passive:false});
+  document.addEventListener('mouseup',endD);
+  document.addEventListener('touchend',endD);
+}
+function onD(e) {
+  const t=e.touches?e.touches[0]:e;
+  const ddx=t.clientX-dx0, ddy=t.clientY-dy0;
+  if(Math.abs(ddx)>4||Math.abs(ddy)>4) dragging=true;
+  if(!dragging) return;
+  if(e.preventDefault) e.preventDefault();
+  widget.style.right=Math.max(8,Math.min(window.innerWidth-70,rr0-ddx))+'px';
+  widget.style.bottom=Math.max(8,Math.min(window.innerHeight-70,rb0-ddy))+'px';
+}
+function endD() {
+  document.removeEventListener('mousemove',onD);
+  document.removeEventListener('touchmove',onD);
+  document.removeEventListener('mouseup',endD);
+  document.removeEventListener('touchend',endD);
+  setTimeout(()=>dragging=false,10);
+}
+[icon, document.getElementById('dphdrag')].forEach(el=>{ el.addEventListener('mousedown',startD); el.addEventListener('touchstart',startD,{passive:true}); });
+</script>
+</body>
+</html>
